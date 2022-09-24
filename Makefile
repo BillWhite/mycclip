@@ -1,19 +1,19 @@
 STLDIR=stl
-DEPDIR=deps
-SOURCES=negative positive lock
+DEPDIR=.deps
+DIRS=$(DEPDIR) $(STLDIR)
+SOURCES=$(file < SOURCES.txt)
 CLEANOBJS=$(DEPDIR) $(STLDIR)
 
-all: dirs $(patsubst %,$(STLDIR)/%.stl,$(SOURCES))
+all: $(patsubst %,$(STLDIR)/%.stl,$(SOURCES)) | $(DIRS)
 
-$(STLDIR)/%.stl: %.scad
+$(STLDIR)/%.stl: %.scad | $(DIRS)
 	openscad -o $@ $< -d $(DEPDIR)/$*.d
 
 clean:
 	rm -rf $(CLEANOBJS)
 
-dirs: 
-	mkdir -p $(STLDIR) $(DEPDIR)
+$(DIRS): 
+	mkdir -p $(DIRS)
 
--include $(DEPDIR)/negative.d
--include $(DEPDIR)/positive.d
--include $(DEPDIR)/lock.d
+include $(wildcard $(DEPDIR)/*.d)
+
